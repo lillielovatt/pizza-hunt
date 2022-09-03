@@ -24,6 +24,24 @@ const commentController = {
             })
             .catch((err) => res.json(err));
     },
+    // add reply to comment. with new replies, not creating a reply document--only updating an existing comment
+    addReply({ params, body }, res) {
+        //passing params as parameter, need to make sure we pass it to addReply when we implement it later in route
+        Comment.findOneAndUpdate(
+            { _id: params.commentId },
+            { $push: { replies: body } }, //push value of body into the replies array
+            { new: true }
+        )
+            .then((dbCommentData) => {
+                if (!dbCommentData) {
+                    return res
+                        .status(404)
+                        .json({ message: "No comment found with this id!" });
+                }
+                res.json(dbCommentData);
+            })
+            .catch((err) => res.json(err));
+    },
     // remove comment
     removeComment({ params }, res) {
         Comment.findOneAndDelete({ _id: params.commentId }) //deletes document and also returns its data
@@ -48,6 +66,24 @@ const commentController = {
                     return;
                 }
                 res.json(dbPizzaData);
+            })
+            .catch((err) => res.json(err));
+    },
+    // delete reply
+    removeReply({ params }, res) {
+        Comment.findOneAndUpdate(
+            { _id: params.commentId },
+            { $pull: { replies: { replyId: params.replyId } } },
+            //remove specific reply from replies array, where replyId matches value of params.replyId passed in from route
+            { new: true }
+        )
+            .then((dbReplyData) => {
+                if (!dbReplyData) {
+                    return res
+                        .status(404)
+                        .json({ message: "No comment with this id found!" });
+                }
+                res.json(dbReplyData);
             })
             .catch((err) => res.json(err));
     },

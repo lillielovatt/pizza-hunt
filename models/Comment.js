@@ -1,17 +1,60 @@
 //could add this to Pizza controller, but this way, the Comment model can be reused
-const { Schema, model } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
+const dateFormat = require("../utils/dateFormat");
 
-const CommentSchema = new Schema({
-    writtenBy: {
-        type: String,
+const ReplySchema = new Schema(
+    {
+        // set custom id to avoid confusion with parent comment _id
+        // need unique identifier instead of default _id field
+        replyId: {
+            type: Schema.Types.ObjectId,
+            default: () => new Types.ObjectId(),
+        },
+        replyBody: {
+            type: String,
+        },
+        writtenBy: { type: String },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            get: (createdAtVal) => dateFormat(createdAtVal),
+        },
     },
-    commentBody: {
-        type: String,
+    {
+        toJSON: {
+            getters: true, //need to tell mongoose model that it should use any getter function specified
+        },
+    }
+);
+
+const CommentSchema = new Schema(
+    {
+        writtenBy: {
+            type: String,
+        },
+        commentBody: {
+            type: String,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            get: (createdAtVal) => dateFormat(createdAtVal),
+        },
+        replies: [ReplySchema], //associate replies with comments
+        // unlike relationship between pizza and comment data, replies will be nested direclty in comment document and NOT referred to
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+    {
+        toJSON: {
+            virtuals: true, //without this, virtuals won't work
+            getters: true, //need to tell mongoose model that it should use any getter function specified
+        },
+        id: false,
+    }
+);
+
+// get total reply count for comment, used later to combine reply count and comment count
+CommentSchema.virtual("replyCount").get(function () {
+    return this.replies.length;
 });
 
 //we will only see comments when we view pizza's data, that includes assoc comments
