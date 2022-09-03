@@ -49,7 +49,10 @@ const pizzaController = {
     },
     // update pizza by id
     updatePizza({ params, body }, res) {
-        Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true })
+        Pizza.findOneAndUpdate({ _id: params.id }, body, {
+            new: true,
+            runValidators: true, //knows to validate any new info
+        })
             //without { new: true }, it will return the original document. This way, we tell mongoose to return the new version of document
             .then((dbPizzaData) => {
                 if (!dbPizzaData) {

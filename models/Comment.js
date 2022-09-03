@@ -12,8 +12,10 @@ const ReplySchema = new Schema(
         },
         replyBody: {
             type: String,
+            required: "You need to provide a comment!", //requires data to exist for that field, if just "true" then no custom message
+            trim: true,
         },
-        writtenBy: { type: String },
+        writtenBy: { type: String, required: "You need to provide a name!" },
         createdAt: {
             type: Date,
             default: Date.now,
@@ -31,9 +33,13 @@ const CommentSchema = new Schema(
     {
         writtenBy: {
             type: String,
+            required: "You need to provide a name!", //requires data to exist for that field, if just "true" then no custom message
+            trim: true,
         },
         commentBody: {
             type: String,
+            required: "You need to provide a comment!", //requires data to exist for that field, if just "true" then no custom message
+            trim: true,
         },
         createdAt: {
             type: Date,

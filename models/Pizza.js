@@ -5,9 +5,13 @@ const PizzaSchema = new Schema(
     {
         pizzaName: {
             type: String,
+            required: "You need to provide a pizza name!", //requires data to exist for that field, if just "true" then no custom message
+            trim: true, //removes white space before and after input string
         },
         createdBy: {
             type: String,
+            required: true,
+            trim: true,
         },
         createdAt: {
             type: Date,
@@ -19,6 +23,8 @@ const PizzaSchema = new Schema(
         },
         size: {
             type: String,
+            required: true,
+            enum: ["Personal", "Small", "Medium", "Large", "Extra Large"], //enumerable, a set of data that can be iterated over, like for loop
             default: "Large",
         },
         toppings: [], //type array, could also say Array

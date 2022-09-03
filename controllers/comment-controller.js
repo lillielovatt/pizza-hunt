@@ -30,7 +30,7 @@ const commentController = {
         Comment.findOneAndUpdate(
             { _id: params.commentId },
             { $push: { replies: body } }, //push value of body into the replies array
-            { new: true }
+            { new: true, runValidators: true }
         )
             .then((dbCommentData) => {
                 if (!dbCommentData) {
